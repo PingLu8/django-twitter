@@ -3,8 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 .vagrant
+.pycharm_helpers
 *.box
-.idea
+.idea*
+.gitignore
 # C extensions
 *.so
 
