@@ -40,7 +40,7 @@ pip install -r requirements.txt
 
 # 设置mysql的root账户的密码为yourpassword
 # 创建名为twitter的数据库
-sudo mysql -u root << EOF
+sudo mysql -u root -p"yourpassword"<< EOF
 	ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'yourpassword';
 	flush privileges;
 	show databases;
@@ -62,8 +62,8 @@ password = '$PASS';
 email = '$MAIL';
 
 if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username, email, password);
-    print('Superuser created.');
+  User.objects.create_superuser(username, email, password);
+  print('Superuser created.');
 else:
     print('Superuser creation skipped.');
 "
