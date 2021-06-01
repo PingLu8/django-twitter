@@ -10,7 +10,7 @@ from comments.api.serializers import (
 from comments.api.permissions import IsObjectOwner
 from utils.decorators import required_params
 
-class CommentViewSets(viewsets.GenericViewSet):
+class CommentViewSet(viewsets.GenericViewSet):
     serializer_class = CommentSerializerForCreate
     queryset = Comment.objects.all()
     filterset_fields = ('tweet_id',)
