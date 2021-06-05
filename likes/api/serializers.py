@@ -1,13 +1,14 @@
-from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import UserSerializerForTweet
 from comments.models import Comment
 from tweets.models import Tweet
 from likes.models import Like
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
+from likes.services import LikeService
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializerForTweet()
 
     class Meta:
         model = Like
@@ -27,6 +28,9 @@ class BaseLikeSerializerForCreateOrCancel(serializers.ModelSerializer):
         if data['content_type'] == 'tweet':
             return Tweet
         return None
+    def _get_has_liked(self):
+        return LikeService.has_liked(data['request'].user, self)
+
 
     def validate(self, data):
         model_class = self._get_model_class(data)
