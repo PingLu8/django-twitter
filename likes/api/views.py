@@ -6,25 +6,25 @@ from utils.decorators import required_params
 from likes.api.serializers import LikeSerializer, LikeSerializerForCreate, LikeSerializerForCancel
 from likes.models import Like
 from rest_framework.decorators import action
+from inbox.services import NotificationService
 
 class LikeViewSet(viewsets.GenericViewSet):
     queryset = Like.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = LikeSerializerForCreate
 
-    @required_params(request_attr='data', params=['content_type', 'object_id'])
-    def create(self, request, *arg, **kwargs):
+    @required_params(method='POST', params=['content_type', 'object_id'])
+    def create(self, request, *args, **kwargs):
         serializer = LikeSerializerForCreate(
             data = request.data,
             context={'request': request},
         )
-
         if not serializer.is_valid():
             return Response({
                 'message': 'Please check input',
                 'errors': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
-        instance = serializer.save()
+        instance= serializer.create(serializer.validated_data)
         return Response(
             LikeSerializer(instance).data,
             status=status.HTTP_201_CREATED)
