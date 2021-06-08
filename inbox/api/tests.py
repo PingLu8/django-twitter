@@ -78,6 +78,45 @@ class NotificationApiTests(TestCase):
         response = self.linghu_client.get(unread_url)
         self.assertEqual(response.data['unread_count'], 0)
 
+    def test_update(self):
+        self.dongxie_client.post(LIKE_URL, {
+            'content_type': 'tweet',
+            'object_id': self.linghu_tweet.id,
+        })
+        comment = self.create_comment(self.linghu, self.linghu_tweet)
+        self.dongxie_client.post(LIKE_URL, {
+            'content_type': 'comment',
+            'object_id': comment.id,
+        })
+        notification = self.linghu.notifications.first()
 
+        url = '/api/notifications/{}/'.format(notification.id)
+        # POST can't work. only support PUT
+        response = self.dongxie_client.post(url, {'unread': False})
+        self.assertEqual(response.status_code, 405)
+        # authenticated user can update
+        response = self.anonymous_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 403)
+        #queryset only search current user. so return 404 for another user account
+        response = self.dongxie_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 404)
 
+        response = self.linghu_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 200)
+        unread_url = '/api/notifications/unread-count/'
+        response = self.linghu_client.get(unread_url)
+        self.assertEqual(response.data['unread_count'], 1)
+
+        response = self.linghu_client.put(url, {'unread': True})
+        response = self.linghu_client.get(unread_url)
+        self.assertEqual(response.data['unread_count'], 2)
+        # must contains 'unread' parameter
+        response = self.linghu_client.put(url, {'verb': 'newverb'} )
+        self.assertEqual(response.status_code, 400)
+
+        # can't update other part
+        response = self.linghu_client.put(url, {'verb': 'newverb', 'unread':False})
+        self.assertEqual(response.status_code, 200)
+        notification.refresh_from_db()
+        self.assertNotEqual(notification.verb, 'newverb')
 
