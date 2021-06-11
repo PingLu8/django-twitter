@@ -7,6 +7,9 @@ __pycache__/
 *.box
 .idea*
 .gitignore
+media/
+Vagrantfile
+
 # C extensions
 *.so
 

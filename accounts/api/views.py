@@ -1,15 +1,25 @@
-from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import (
+    LoginSerializer,
+    SignupSerializer,
+    UserProfileSerializerForUpdate,
+    UserSerializer,
+    UserSerializerWithProfile,
+)
+from django.contrib.auth import (
+    authenticate as django_authenticate,
+    login as django_login,
+    logout as django_logout,
+)
+from accounts.models import UserProfile
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
-from django.contrib.auth import (
-    authenticate as django_authenticate,
-    login as django_login,
-    logout as django_logout,
-)
+from utils.permissions import IsObjectOwner
+
+
 from accounts.api.serializers import SignupSerializer, LoginSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -18,7 +28,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated,]
+    permission_classes = [permissions.IsAdminUser]
 
 class AccountViewSet(viewsets.ViewSet):
     permission_classes = (AllowAny,)
@@ -98,3 +108,11 @@ class AccountViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             data['user'] = UserSerializer(request.user).data
         return Response(data)
+
+class UserProfileViewSet(
+    viewsets.GenericViewSet,
+    viewsets.mixins.UpdateModelMixin,
+):
+    queryset = UserProfile
+    permission_classes = (permissions.IsAuthenticated, IsObjectOwner,)
+    serializer_class = UserProfileSerializerForUpdate
