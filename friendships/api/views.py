@@ -10,7 +10,7 @@ from friendships.api.serializers import (
 )
 
 from django.contrib.auth.models import User
-from utils.paginations import FriendshipPagination
+from friendships.paginations import FriendshipPagination
 
 class FriendshipViewSet(viewsets.GenericViewSet):
     queryset = User.objects.all()
