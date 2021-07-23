@@ -3,6 +3,7 @@ from django.db import models
 from tweets.models import Tweet
 from likes.models import Like
 from django.contrib.contenttypes.models import ContentType
+from accounts.services import UserService
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -14,6 +15,9 @@ class Comment(models.Model):
     class Meta:
         index_together = (('tweet', 'created_at'), )
 
+    def __str__(self):
+        return f'{self.created_at} - {self.user} says {self.content} at tweet {self.tweet}'
+
     @property
     def like_set(self):
         return Like.objects.filter(
@@ -21,6 +25,6 @@ class Comment(models.Model):
             object_id=self.id,
         ).order_by('-created_at')
 
-    def __str__(self):
-        return f'{self.created_at} - {self.user} says {self.content} at tweet {self.tweet}'
-
+    @property
+    def cached_user(self):
+        return UserService.get_user_through_cache(self.user_id)

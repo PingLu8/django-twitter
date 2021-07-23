@@ -7,7 +7,7 @@ from likes.services import LikeService
 from likes.api.serializers import LikeSerializer
 
 class TweetSerializer(serializers.ModelSerializer):
-    user = UserSerializerForTweet()
+    user = UserSerializerForTweet(source='cached_user')
     has_liked = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()

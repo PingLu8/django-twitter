@@ -10,6 +10,7 @@ TWEET_LIST_API = '/api/tweets/'
 class LikeApiTests(TestCase):
 
     def setUp(self):
+        self.clear_cache()
         self.linghu, self.linghu_client = self.create_user_and_client('linghu')
         self.dongxie, self.dongxie_client = self.create_user_and_client('dongxie')
 
