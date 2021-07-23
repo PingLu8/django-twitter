@@ -16,7 +16,7 @@ class FriendshipService(object):
 
         # wrong implementation 2. Join is not allowed in big data table.
         # when using select_related('from_user'), it already left join and contains from_user
-        # in friendships. so, the For loop doesn't has sql query to get from_user.
+        # in friendships. so, the For loop doesn't have sql query to get from_user.
         # friendships = Friendship.objects.filter(to_user=user).select_related('from_user')
         # return [friendship.from_user for friendship in friendships]
 
