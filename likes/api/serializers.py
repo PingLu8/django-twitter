@@ -9,7 +9,7 @@ from likes.services import LikeService
 from inbox.services import NotificationService
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializerForLike()
+    user = UserSerializerForLike(source='cached_user')
 
     class Meta:
         model = Like

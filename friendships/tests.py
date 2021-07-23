@@ -19,4 +19,4 @@ class FriendshipServiceTests(TestCase):
 
         Friendship.objects.filter(from_user=self.linghu, to_user=self.dongxie).delete()
         user_id_set = FriendshipService.get_following_user_id_set(self.linghu.id)
-        self.assertSetEqual(user_id_set, {queueuser1.id, user2.id})
+        self.assertSetEqual(user_id_set, {user1.id, user2.id})
