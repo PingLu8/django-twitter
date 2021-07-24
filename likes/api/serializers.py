@@ -33,7 +33,6 @@ class BaseLikeSerializerForCreateOrCancel(serializers.ModelSerializer):
     def _get_has_liked(self):
         return LikeService.has_liked(data['request'].user, self)
 
-
     def validate(self, data):
         model_class = self._get_model_class(data)
         if model_class is None:

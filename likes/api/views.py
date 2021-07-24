@@ -6,7 +6,6 @@ from utils.decorators import required_params
 from likes.api.serializers import LikeSerializer, LikeSerializerForCreate, LikeSerializerForCancel
 from likes.models import Like
 from rest_framework.decorators import action
-from inbox.services import NotificationService
 
 class LikeViewSet(viewsets.GenericViewSet):
     queryset = Like.objects.all()
