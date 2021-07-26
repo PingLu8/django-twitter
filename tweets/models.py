@@ -5,6 +5,8 @@ from utils.time_helpers import utc_now
 from likes.models import Like
 from django.contrib.contenttypes.models import ContentType
 from utils.memcached_helper import MemcachedHelper
+from django.db.models.signals import post_save, pre_delete
+from utils.listeners import invalidate_object_cache
 
 
 class Tweet(models.Model):
@@ -42,3 +44,6 @@ class Tweet(models.Model):
     def cached_user(self):
         return MemcachedHelper.get_object_through_cache(User, self.user_id)
 
+# hook up with listeners to invalidate cache
+pre_delete.connect(invalidate_object_cache, sender=Tweet)
+post_save.connect(invalidate_object_cache, sender=Tweet)
