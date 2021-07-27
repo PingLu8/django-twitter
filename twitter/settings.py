@@ -177,7 +177,22 @@ CACHES = {
                 'TIMEOUT': 86400,
                 'KEY_PREFIX': 'testing',
         },
+        'ratelimit': {
+                'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+                'LOCATION':'127.0.0.1:11211',
+                'TIMEOUT': 86400 * 7,
+                'KEY_PREFIX': 'rl',
+        },
 }
+
+# Redis
+# install: sudo apt-get install redis
+# then install redis python client: pip install redis
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+REDIS_DB = 0 if TESTING else 1
+REDIS_KEY_EXPIRE_TIME = 7 * 86400 # in seconds
+
 
 try:
     from .local_settings import *
