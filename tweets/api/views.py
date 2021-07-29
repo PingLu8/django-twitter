@@ -10,6 +10,7 @@ from tweets.api.serializers import (
     TweetSerializerForCreate,
     TweetSerializerForDetail,
 )
+from tweets.services import TweetService
 
 class TweetViewSet(viewsets.GenericViewSet):
     serializer_class = TweetSerializerForCreate
@@ -23,10 +24,13 @@ class TweetViewSet(viewsets.GenericViewSet):
 
     @required_params(params=['user_id'])
     def list(self, request, *args, **kwargs):
-        tweets = Tweet.objects.filter(user_id = request.query_params['user_id'])\
-            .order_by('-created_at')
+        tweets = TweetService.get_cached_tweets(user_id=request.query_params['user_id'])
         tweets = self.paginate_queryset(tweets)
-        serializer = TweetSerializer(tweets, context={'request': request}, many=True,)
+        serializer = TweetSerializer(
+                tweets,
+                context={'request': request},
+                many=True,
+        )
         return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
