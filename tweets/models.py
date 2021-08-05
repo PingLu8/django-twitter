@@ -22,6 +22,13 @@ class Tweet(models.Model):
     content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # add a field in existed table, must allow nullable.
+    # otherwise, it will go through all rows to set value for the new field
+    # This action will cause migration very slow and lock the whole table,
+    # Thus, user can't create new object during the migration.
+    likes_count = models.IntegerField(default=0, null=True)
+    comments_count = models.IntegerField(default=0, null=True)
+
     class Meta:
         index_together = (
             ('user', 'created_at'),
