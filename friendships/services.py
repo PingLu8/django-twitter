@@ -37,6 +37,26 @@ class FriendshipService(object):
         ).exists()
 
     @classmethod
+    def follow(cls, from_user_id, to_user_id):
+        if from_user_id == to_user_id:
+            return None
+        return Friendship.objects.create(
+                from_user_id = from_user_id,
+                to_user_id = to_user_id,
+        )
+
+    @classmethod
+    def unfollow(cls, from_user_id, to_user_id):
+        if from_user_id == to_user_id:
+            return 0
+
+        deleted, _ = Friendship.objects.filter(
+                from_user_id = from_user_id,
+                to_user_id = to_user_id,
+        ).delete()
+        return deleted
+
+    @classmethod
     def get_following_user_id_set(cls, from_user_id):
         key = FOLLOWINGS_PATTERN.format(user_id=from_user_id)
         user_id_set = cache.get(key)
