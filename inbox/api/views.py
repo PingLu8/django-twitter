@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from notifications.models import Notification
 from utils.decorators import required_params
+from django.utils.decorators import method_decorator
+from ratelimit.decorators import ratelimit
 
 class NotificationViewSet(viewsets.GenericViewSet, viewsets.mixins.ListModelMixin,):
     serializer_class = NotificationSerializer
@@ -17,17 +19,20 @@ class NotificationViewSet(viewsets.GenericViewSet, viewsets.mixins.ListModelMixi
         return Notification.objects.filter(recipient=self.request.user)
 
     @action(methods=['GET'], detail=False, url_path='unread-count')
+    @method_decorator(ratelimit(key='user', rate='3/s', method='GET', block=True))
     def unread_count(self, request, *args, **kwargs):
         # GET /api/notifications/unread-count/
         count = self.get_queryset().filter(unread=True).count()
         return Response({'unread_count':count}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False, url_path='mark-all-as-read')
+    @method_decorator(ratelimit(key='user', rate='3/s', method='POST', block=True))
     def mark_all_as_read(self, request, *args, **kwargs):
         updated_count = self.get_queryset().update(unread=False)
         return Response({'marked_count': updated_count}, status=status.HTTP_200_OK)
 
-    @required_params(method='PUT', params=['unread'])
+    @required_params(method='POST', params=['unread'])
+    @method_decorator(ratelimit(key='user', rate='3/s', method='POST', block=True))
     def update(self, request, *args, **kwargs):
         # PUT /api/notifications/1  (request data unread is True or False)
         serializer = NotificationSerializerForUpdate(
