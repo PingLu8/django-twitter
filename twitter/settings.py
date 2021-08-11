@@ -206,6 +206,11 @@ CELERY_QUEUES = (
     Queue('newsfeeds', routing_key='newsfeeds'),
 )
 
+# Rate Limiter
+RATELIMIT_USE_CACHE = 'ratelimit'
+RATELIMIT_CACHE_PREFIX = 'rl' # avoid conflict with other key
+RATELIMIT_ENABLE = not TESTING # disable during testing
+
 try:
     from .local_settings import *
 except:
